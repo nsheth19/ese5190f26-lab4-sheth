@@ -44,14 +44,14 @@
 #define BLYNK_PRINT Serial
 
 /* Fill-in your Template ID (only if using Blynk.Cloud) */
-#define BLYNK_TEMPLATE_ID           ".................." // FILL THIS OUT
-#define BLYNK_TEMPLATE_NAME         ".................." // FILL THIS OUT
-#define BLYNK_AUTH_TOKEN            ".................." // FILL THIS OUT
+#define BLYNK_TEMPLATE_ID "TMPL2CuKDw6jw"
+#define BLYNK_TEMPLATE_NAME "ESE5190 Lab4"
+#define BLYNK_AUTH_TOKEN "b0qlOtWymPeJ1TPVb9as1A_TW6H3nG-S"
 
 // Your WiFi credentials.
 // Set password to "" for open networks.
-#define MY_SSID                     ".................." // FILL THIS OUT
-#define MY_PASSWORD                 ".................." // FILL THIS OUT
+#define MY_SSID                     "Nikhil (2)"
+#define MY_PASSWORD                 "upfschool" 
 
 #include <WiFi.h>
 #include <WiFiClient.h>

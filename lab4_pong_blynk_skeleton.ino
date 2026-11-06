@@ -44,9 +44,9 @@
 #define BLYNK_PRINT Serial
 
 /* Fill-in your Template ID (only if using Blynk.Cloud) */
-#define BLYNK_TEMPLATE_ID "TMPL2CuKDw6jw"
+#define BLYNK_TEMPLATE_ID "TMPL2RYh-j3ns"
 #define BLYNK_TEMPLATE_NAME "ESE5190 Lab4"
-#define BLYNK_AUTH_TOKEN "b0qlOtWymPeJ1TPVb9as1A_TW6H3nG-S"
+#define BLYNK_AUTH_TOKEN "NNfJzmvu6pNpNWSiYkJW9Q2HMFASVg75"
 
 // Your WiFi credentials.
 // Set password to "" for open networks.

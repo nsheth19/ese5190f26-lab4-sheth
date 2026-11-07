@@ -4,6 +4,6 @@
 
 | Team Member Name | Email Address       | GitHub Handle       |
 |------------------|---------------------|---------------------|
-| [Name 1]         | [Email 1]           | [Handle 1]          |
+| Nikhil Sheth         | nsheth1@engineering.upenn.edu          | nsheth19          |
 
 

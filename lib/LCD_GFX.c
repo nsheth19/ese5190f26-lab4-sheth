@@ -7,6 +7,7 @@
 
 #include "LCD_GFX.h"
 #include "ST7735.h"
+#include "ASCII_LUT.h"
 
 /******************************************************************************
 * Local Functions
@@ -73,9 +74,36 @@ void LCD_drawChar(uint8_t x, uint8_t y, uint16_t character, uint16_t fColor, uin
 * @brief		Draw a colored circle of set radius at coordinates
 * @note
 *****************************************************************************/
-void LCD_drawCircle(uint8_t x0, uint8_t y0, uint8_t radius,uint16_t color)
+void LCD_drawCircle(uint8_t x0, uint8_t y0, uint8_t radius, uint16_t color)
 {
-	// Fill this out
+    short x = radius;
+    short y = 0;
+    short err = 0;
+
+    while (x >= y)
+    {
+        LCD_drawPixel(x0 + x, y0 + y, color);
+        LCD_drawPixel(x0 + y, y0 + x, color);
+        LCD_drawPixel(x0 - y, y0 + x, color);
+        LCD_drawPixel(x0 - x, y0 + y, color);
+        LCD_drawPixel(x0 - x, y0 - y, color);
+        LCD_drawPixel(x0 - y, y0 - x, color);
+        LCD_drawPixel(x0 + y, y0 - x, color);
+        LCD_drawPixel(x0 + x, y0 - y, color);
+
+        y++;
+
+        if (err <= 0)
+        {
+            err += 2 * y + 1;
+        }
+
+        if (err > 0)
+        {
+            x--;
+            err -= 2 * x + 1;
+        }
+    }
 }
 
 
@@ -84,9 +112,36 @@ void LCD_drawCircle(uint8_t x0, uint8_t y0, uint8_t radius,uint16_t color)
 * @brief		Draw a line from and to a point with a color
 * @note
 *****************************************************************************/
-void LCD_drawLine(short x0,short y0,short x1,short y1,uint16_t c)
+void LCD_drawLine(short x0, short y0, short x1, short y1, uint16_t c)
 {
-	// Fill this out
+    short dx = (x1 > x0) ? (x1 - x0) : (x0 - x1);
+    short sx = (x0 < x1) ? 1 : -1;
+    short dy = (y1 > y0) ? (y0 - y1) : (y1 - y0);
+    short sy = (y0 < y1) ? 1 : -1;
+    short err = dx + dy;
+    short e2;
+
+    while (1)
+    {
+        LCD_drawPixel(x0, y0, c);
+
+        if (x0 == x1 && y0 == y1)
+            break;
+
+        e2 = 2 * err;
+
+        if (e2 >= dy)
+        {
+            err += dy;
+            x0 += sx;
+        }
+
+        if (e2 <= dx)
+        {
+            err += dx;
+            y0 += sy;
+        }
+    }
 }
 
 
@@ -96,21 +151,56 @@ void LCD_drawLine(short x0,short y0,short x1,short y1,uint16_t c)
 * @brief		Draw a colored block at coordinates
 * @note
 *****************************************************************************/
-void LCD_drawBlock(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1,uint16_t color)
+void LCD_drawBlock(uint8_t x0, uint8_t y0,
+                   uint8_t x1, uint8_t y1,
+                   uint16_t color)
 {
-	// Fill this out
-}
+    uint16_t width = x1 - x0 + 1;
+    uint16_t height = y1 - y0 + 1;
+    uint16_t pixels = width * height;
 
+    uint8_t high = color >> 8;
+    uint8_t low = color & 0xFF;
+
+    // Set rectangle location once
+    LCD_setAddr(x0, y0, x1, y1);
+
+    clear(LCD_PORT, LCD_TFT_CS);
+
+    for (uint16_t i = 0; i < pixels; i++)
+    {
+        SPI_ControllerTx_stream(high);
+        SPI_ControllerTx_stream(low);
+    }
+
+    set(LCD_PORT, LCD_TFT_CS);
+}
 /**************************************************************************//**
 * @fn			void LCD_setScreen(uint16_t color)
 * @brief		Draw the entire screen to a color
 * @note
 *****************************************************************************/
-void LCD_setScreen(uint16_t color) 
+void LCD_setScreen(uint16_t color)
 {
-	// Fill this out
-}
+    uint16_t i;
+    uint8_t high = color >> 8;
+    uint8_t low = color & 0xFF;
 
+    // Set address window to entire screen ONCE
+    LCD_setAddr(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
+
+    // Keep CS low while sending all pixels
+    clear(LCD_PORT, LCD_TFT_CS);
+
+    for (i = 0; i < (LCD_WIDTH * LCD_HEIGHT); i++)
+    {
+        SPI_ControllerTx_stream(high);
+        SPI_ControllerTx_stream(low);
+    }
+
+    // End transmission
+    set(LCD_PORT, LCD_TFT_CS);
+}
 /**************************************************************************//**
 * @fn			void LCD_drawString(uint8_t x, uint8_t y, char* str, uint16_t fg, uint16_t bg)
 * @brief		Draw a string starting at the point with foreground and background colors
@@ -118,5 +208,11 @@ void LCD_setScreen(uint16_t color)
 *****************************************************************************/
 void LCD_drawString(uint8_t x, uint8_t y, char* str, uint16_t fg, uint16_t bg)
 {
-	// Fill this out
+    while (*str != '\0')
+    {
+        LCD_drawChar(x, y, *str, fg, bg);
+
+        x += 6;
+        str++;
+    }
 }
